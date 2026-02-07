@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#8B1538">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -31,12 +31,13 @@
                 radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
                 radial-gradient(circle at 80% 80%, rgba(169, 30, 58, 0.08) 0%, transparent 50%),
                 linear-gradient(135deg, #FFF8F3 0%, #FFE8E8 100%);
-            background-attachment: fixed;
+            background-attachment: scroll;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
-            overflow: hidden;
+            overflow: auto;
+            padding: 40px 0;
             position: relative;
             touch-action: manipulation;
         }
@@ -95,6 +96,8 @@
                 inset 0 1px 0 rgba(255, 255, 255, 0.8);
             border: 1px solid rgba(212, 175, 55, 0.2);
             position: relative;
+            max-height: calc(100vh - 80px);
+            overflow: auto;
         }
 
         @media (max-width: 768px) {
@@ -216,6 +219,7 @@
             position: relative;
             overflow: hidden;
             border-radius: 2px;
+            z-index: 2;
         }
 
         .start-btn::before {
@@ -895,6 +899,20 @@
             border-bottom: 2px solid var(--gold);
             border-right: 2px solid var(--gold);
         }
+
+        /* Extra mobile tweaks */
+        @media (max-width: 480px) {
+            .container { padding: 12px; }
+            .intro-screen { padding: 20px; border-radius: 6px; }
+            .start-btn, .retry-btn, .play-again-btn {
+                width: 100%;
+                padding: 14px 20px;
+                font-size: 1.05em;
+                box-sizing: border-box;
+            }
+            .scene-container { max-width: 100%; padding: 0 8px; }
+            .celebration-screen { padding-top: 20px; }
+        }
     </style>
 </head>
 <body>
@@ -938,7 +956,7 @@
             <div class="decorative-corner bottom-left"></div>
             <div class="decorative-corner bottom-right"></div>
             
-            <div class="oops-text">Oops</div>
+            <div class="oops-text">Oopsss pretty little baby</div>
             <div class="final-score">You scored <strong id="finalScore">0</strong> points</div>
             <button class="retry-btn" onclick="showCelebration()">CONTINUE</button>
         </div>
@@ -950,7 +968,7 @@
                 <div class="bouquet-scene">
                     <div class="scene-container">
                         <div class="rose-day-wish">Happy Rose Day</div>
-                        <div class="for-you-text">for the most wonderful</div>
+                        <div class="for-you-text">to loveliest baby</div>
                         <div class="jawahar-name">Jawahar</div>
                         
                         <div class="characters-wrapper">
@@ -1187,7 +1205,7 @@
             <div class="celebration-step adore-step">
                 <div class="adore-screen">
                     <div class="adore-message">
-                        <h1>adore you<br>a lot</h1>
+                        <h1> i adore you<br>a lot</h1>
                         <div class="subtitle">truly, deeply, always</div>
                     </div>
                 </div>
@@ -1218,6 +1236,7 @@
         let gameSpeed = baseSpeed;
         let obstacleFrequency = 150;
         let frameCount = 0;
+        let rosesCollectedTotal = 0;  // Track total roses collected
 
         // Player (girl with rose)
         const player = {
@@ -1352,6 +1371,7 @@
             obstacles = [];
             roses = [];
             score = 0;
+            rosesCollectedTotal = 0;  // Reset rose counter
             gameSpeed = baseSpeed;
             frameCount = 0;
             document.getElementById('scoreValue').textContent = score;
@@ -1539,6 +1559,7 @@
                     roses.splice(i, 1);
                 } else if (!roses[i].collected && checkCollision(player, roses[i])) {
                     roses[i].collected = true;
+                    rosesCollectedTotal++;  // Increment total roses collected
                     score += 5;
                     document.getElementById('scoreValue').textContent = score;
                     playRoseCollectSound();
@@ -1588,11 +1609,8 @@
             // Show bouquet scene first
             document.querySelector('.bouquet-step').classList.add('active');
             
-            // Calculate total roses collected
-            let totalRoses = 0;
-            roses.forEach(rose => {
-                if (rose.collected) totalRoses++;
-            });
+            // Use the total roses collected during the game
+            let totalRoses = rosesCollectedTotal;
             
             document.getElementById('bouquetRoseCount').textContent = totalRoses;
             
