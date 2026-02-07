@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#8B1538">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>For You, Jawahar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Playfair+Display:wght@400;500;600;700;900&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --rose-deep: #8B1538;
+            --rose-wine: #A91E3A;
+            --rose-blush: #D4697D;
+            --rose-soft: #F4D8DC;
+            --cream: #FFF8F3;
+            --gold: #D4AF37;
+        }
+
+        body {
+            font-family: 'Lora', serif;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(169, 30, 58, 0.08) 0%, transparent 50%),
+                linear-gradient(135deg, #FFF8F3 0%, #FFE8E8 100%);
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+            touch-action: manipulation;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 30% 20%, rgba(212, 105, 125, 0.03) 1px, transparent 1px),
+                radial-gradient(circle at 70% 60%, rgba(212, 175, 55, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px, 80px 80px;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 900px;
+            width: 100%;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+        }
+
+        .intro-screen, .game-container, .game-over-screen, .celebration-screen {
+            display: none;
+        }
+
+        .intro-screen.active, .game-container.active, .game-over-screen.active, .celebration-screen.active {
+            display: block;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .intro-screen {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            padding: 60px;
+            border-radius: 4px;
+            box-shadow: 
+                0 30px 90px rgba(139, 21, 56, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .intro-screen {
+                padding: 30px 20px;
+            }
+        }
+
+        .intro-screen::before,
+        .intro-screen::after {
+            content: '✦';
+            position: absolute;
+            font-size: 2em;
+            color: var(--gold);
+            opacity: 0.3;
+        }
+
+        .intro-screen::before {
+            top: 20px;
+            left: 30px;
+            animation: sparkle 3s ease-in-out infinite;
+        }
+
+        .intro-screen::after {
+            bottom: 20px;
+            right: 30px;
+            animation: sparkle 3s ease-in-out infinite 1.5s;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.2); }
+        }
+
+        .intro-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5em;
+            font-weight: 700;
+            color: var(--rose-deep);
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            text-shadow: 2px 2px 20px rgba(139, 21, 56, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .intro-title {
+                font-size: 2.5em;
+            }
+        }
+
+        .intro-subtitle {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6em;
+            font-weight: 300;
+            color: var(--rose-wine);
+            margin-bottom: 50px;
+            font-style: italic;
+            letter-spacing: 0.03em;
+        }
+
+        @media (max-width: 768px) {
+            .intro-subtitle {
+                font-size: 1.2em;
+                margin-bottom: 30px;
+            }
+        }
+
+        .instructions {
+            background: linear-gradient(135deg, rgba(255, 248, 243, 0.9), rgba(244, 216, 220, 0.5));
+            padding: 40px;
+            border-radius: 2px;
+            margin: 40px 0;
+            border-left: 4px solid var(--rose-blush);
+            text-align: left;
+            box-shadow: 0 10px 40px rgba(139, 21, 56, 0.08);
+        }
+
+        .instructions h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--rose-deep);
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .instruction-item {
+            color: var(--rose-wine);
+            margin: 18px 0;
+            font-size: 1.15em;
+            line-height: 1.7;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .instruction-item::before {
+            content: '◆';
+            position: absolute;
+            left: 0;
+            color: var(--rose-blush);
+            font-size: 0.8em;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, var(--rose-deep) 0%, var(--rose-wine) 100%);
+            color: var(--cream);
+            border: none;
+            padding: 18px 60px;
+            font-size: 1.3em;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            box-shadow: 
+                0 10px 30px rgba(139, 21, 56, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            border-radius: 2px;
+        }
+
+        .start-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .start-btn:hover::before {
+            left: 100%;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 15px 40px rgba(139, 21, 56, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .start-btn:active {
+            transform: translateY(0);
+        }
+
+        #gameCanvas {
+            border: 2px solid var(--rose-blush);
+            border-radius: 2px;
+            background: 
+                linear-gradient(to bottom, 
+                    rgba(255, 248, 243, 0.95) 0%, 
+                    rgba(255, 240, 240, 0.95) 70%,
+                    rgba(244, 216, 220, 0.95) 100%);
+            box-shadow: 
+                0 20px 60px rgba(139, 21, 56, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            display: block;
+            margin: 30px auto;
+            max-width: 100%;
+            height: auto;
+        }
+
+        @media (max-width: 768px) {
+            #gameCanvas {
+                width: 100%;
+                margin: 20px auto;
+            }
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 20px 30px;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 2px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .score-display {
+            font-family: 'Playfair Display', serif;
+            font-size: 2em;
+            color: var(--rose-deep);
+            font-weight: 600;
+        }
+
+        .score-label {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.5em;
+            color: var(--rose-blush);
+            font-weight: 300;
+            letter-spacing: 0.15em;
+            display: block;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .game-over-screen {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(30px);
+            padding: 70px;
+            border-radius: 4px;
+            box-shadow: 
+                0 40px 100px rgba(139, 21, 56, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            position: relative;
+        }
+
+        .oops-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 4.5em;
+            color: var(--rose-wine);
+            margin-bottom: 30px;
+            font-weight: 700;
+            animation: gentleBounce 0.6s ease-out;
+            letter-spacing: 0.05em;
+        }
+
+        @keyframes gentleBounce {
+            0% { transform: scale(0.8) translateY(-20px); opacity: 0; }
+            60% { transform: scale(1.1) translateY(0); }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .final-score {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2em;
+            color: var(--rose-deep);
+            margin: 30px 0;
+            font-weight: 400;
+        }
+
+        .final-score strong {
+            font-weight: 600;
+            color: var(--rose-wine);
+            font-size: 1.3em;
+        }
+
+        .retry-btn {
+            background: linear-gradient(135deg, var(--rose-wine) 0%, var(--rose-blush) 100%);
+            color: white;
+            border: none;
+            padding: 16px 50px;
+            font-size: 1.2em;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(169, 30, 58, 0.3);
+            transition: all 0.3s ease;
+            margin-top: 25px;
+            border-radius: 2px;
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(169, 30, 58, 0.4);
+        }
+
+        .celebration-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, 
+                rgba(139, 21, 56, 0.03) 0%, 
+                rgba(255, 248, 243, 1) 50%,
+                rgba(169, 30, 58, 0.05) 100%);
+            display: none;
+        }
+
+        .celebration-screen.active {
+            display: block;
+        }
+
+        .celebration-step {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .celebration-step.active {
+            display: flex;
+            opacity: 1;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Step 1: Bouquet giving scene */
+        .bouquet-scene {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 50% 120%, rgba(212, 105, 125, 0.15) 0%, transparent 50%),
+                linear-gradient(to bottom, 
+                    rgba(255, 248, 243, 0.98) 0%, 
+                    rgba(255, 235, 238, 0.98) 100%);
+            overflow: hidden;
+        }
+
+        .bouquet-scene::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: linear-gradient(to top, rgba(212, 175, 55, 0.1) 0%, transparent 100%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        .scene-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 90%;
+            max-width: 700px;
+        }
+
+        .rose-day-wish {
+            font-family: 'Playfair Display', serif;
+            font-size: 4em;
+            color: var(--rose-deep);
+            margin-bottom: 25px;
+            font-weight: 700;
+            line-height: 1.2;
+            animation: titleFadeIn 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-shadow: 3px 3px 25px rgba(139, 21, 56, 0.2);
+            position: relative;
+        }
+
+        .rose-day-wish::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--rose-blush), transparent);
+            animation: expandLine 1s ease-out 0.5s both;
+        }
+
+        @keyframes expandLine {
+            from { width: 0; }
+            to { width: 100px; }
+        }
+
+        @keyframes titleFadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(-30px) scale(0.9);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .rose-day-wish {
+                font-size: 2.5em;
+                margin-bottom: 20px;
+            }
+        }
+
+        .for-you-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8em;
+            color: var(--rose-wine);
+            margin-bottom: 10px;
+            font-style: italic;
+            font-weight: 300;
+            animation: fadeIn 1s ease-out 0.5s both;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .for-you-text {
+                font-size: 1.3em;
+            }
+        }
+
+        .jawahar-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 4.5em;
+            color: var(--rose-deep);
+            margin: 15px 0 50px;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            animation: nameGlow 1.5s ease-out 0.8s both;
+            text-shadow: 2px 2px 30px rgba(169, 30, 58, 0.3);
+            position: relative;
+        }
+
+        @keyframes nameGlow {
+            from { 
+                opacity: 0;
+                transform: scale(0.95);
+                filter: blur(5px);
+            }
+            to { 
+                opacity: 1;
+                transform: scale(1);
+                filter: blur(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .jawahar-name {
+                font-size: 2.8em;
+                margin: 10px 0 35px;
+            }
+        }
+
+        .characters-wrapper {
+            position: relative;
+            margin: 50px 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 40px;
+            animation: sceneAppear 1.5s ease-out 1.2s both;
+        }
+
+        @keyframes sceneAppear {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .characters-wrapper {
+                margin: 30px 0;
+                gap: 20px;
+            }
+        }
+
+        .character-container {
+            position: relative;
+            animation: characterFloat 3s ease-in-out infinite;
+        }
+
+        .character-container.girl {
+            animation-delay: 0s;
+        }
+
+        .character-container.boy {
+            animation-delay: 0.5s;
+        }
+
+        @keyframes characterFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .girl-with-bouquet {
+            position: relative;
+            width: 180px;
+            height: 220px;
+        }
+
+        .boy-receiving {
+            position: relative;
+            width: 180px;
+            height: 220px;
+        }
+
+        @media (max-width: 768px) {
+            .girl-with-bouquet, .boy-receiving {
+                width: 120px;
+                height: 150px;
+            }
+        }
+
+        .bouquet-visual {
+            position: absolute;
+            bottom: 80px;
+            left: 25%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 120px;
+            z-index: 10;
+            filter: drop-shadow(0 5px 15px rgba(139, 21, 56, 0.3));
+            animation: bouquetHandoff 3s ease-in-out 2.5s both;
+        }
+
+        @keyframes bouquetHandoff {
+            0% {
+                left: 25%;
+                transform: translateX(-50%) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            40% {
+                transform: translateX(-50%) scale(1.15) rotate(-10deg) translateY(-25px);
+            }
+            100% {
+                left: 75%;
+                transform: translateX(-50%) scale(1) rotate(5deg);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .bouquet-visual {
+                width: 70px;
+                height: 85px;
+                bottom: 60px;
+            }
+        }
+
+        .rose-count-display {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8em;
+            color: var(--rose-deep);
+            margin-top: 60px;
+            font-weight: 600;
+            animation: countAppear 1s ease-out 3.5s both;
+            text-shadow: 2px 2px 20px rgba(139, 21, 56, 0.15);
+        }
+
+        @keyframes countAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .rose-count-display {
+                font-size: 2em;
+                margin-top: 40px;
+            }
+        }
+
+        .roses-collected-label {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.45em;
+            color: var(--rose-wine);
+            display: block;
+            margin-top: 12px;
+            font-style: italic;
+            letter-spacing: 0.08em;
+        }
+
+        /* Sparkle effects */
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--gold);
+            border-radius: 50%;
+            animation: sparkleFloat 2s ease-in-out infinite;
+            box-shadow: 0 0 10px var(--gold);
+        }
+
+        @keyframes sparkleFloat {
+            0%, 100% {
+                opacity: 0;
+                transform: translateY(0) scale(0);
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(-30px) scale(1);
+            }
+        }
+
+        /* Step 2: Adore screen */
+        .adore-screen {
+            background: linear-gradient(135deg, 
+                var(--cream) 0%, 
+                rgba(244, 216, 220, 0.5) 100%);
+        }
+
+        .adore-message {
+            text-align: center;
+            animation: scaleIn 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .adore-message h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 6em;
+            color: var(--rose-deep);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .adore-message h1 {
+                font-size: 3.5em;
+            }
+        }
+
+        .adore-message .subtitle {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5em;
+            color: var(--rose-wine);
+            font-style: italic;
+            font-weight: 300;
+        }
+
+        @media (max-width: 768px) {
+            .adore-message .subtitle {
+                font-size: 1.5em;
+            }
+        }
+
+        /* Step 3: Made with love screen */
+        .credits-screen {
+            background: 
+                radial-gradient(circle at 30% 40%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(169, 30, 58, 0.1) 0%, transparent 50%),
+                linear-gradient(135deg, var(--cream) 0%, rgba(255, 240, 245, 1) 100%);
+        }
+
+        .credits-message {
+            text-align: center;
+            animation: fadeInUp 1.5s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .credits-message h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3em;
+            color: var(--rose-deep);
+            font-weight: 600;
+            margin-bottom: 20px;
+            letter-spacing: 0.05em;
+        }
+
+        @media (max-width: 768px) {
+            .credits-message h1 {
+                font-size: 2em;
+            }
+        }
+
+        .credits-message .by-line {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 4em;
+            color: var(--rose-wine);
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .credits-message .by-line {
+                font-size: 2.5em;
+            }
+        }
+
+        .heart-decoration {
+            font-size: 2.5em;
+            color: var(--rose-blush);
+            margin: 30px 0;
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .play-again-btn {
+            background: linear-gradient(135deg, var(--rose-deep) 0%, var(--rose-wine) 100%);
+            color: var(--cream);
+            border: none;
+            padding: 16px 50px;
+            font-size: 1.2em;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(139, 21, 56, 0.3);
+            transition: all 0.3s ease;
+            margin-top: 40px;
+            border-radius: 2px;
+            animation: fadeIn 2s ease-out 1s both;
+        }
+
+        @media (max-width: 768px) {
+            .play-again-btn {
+                padding: 14px 40px;
+                font-size: 1.1em;
+                margin-top: 30px;
+            }
+        }
+
+        .play-again-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(139, 21, 56, 0.4);
+        }
+
+        .play-again-btn:active {
+            transform: translateY(0);
+        }
+
+        .petal {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: radial-gradient(ellipse at 30% 30%, rgba(212, 105, 125, 0.9), rgba(139, 21, 56, 0.7));
+            border-radius: 50% 0 50% 50%;
+            opacity: 0;
+            animation: fallAndFade linear infinite;
+            filter: blur(0.3px);
+        }
+
+        @keyframes fallAndFade {
+            0% { 
+                opacity: 0;
+                transform: translateY(-50px) rotate(0deg) scale(0.8);
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% { 
+                opacity: 0;
+                transform: translateY(100vh) rotate(720deg) scale(1.2);
+            }
+        }
+
+        .decorative-corner {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            opacity: 0.15;
+        }
+
+        .decorative-corner.top-left {
+            top: 20px;
+            left: 20px;
+            border-top: 2px solid var(--gold);
+            border-left: 2px solid var(--gold);
+        }
+
+        .decorative-corner.top-right {
+            top: 20px;
+            right: 20px;
+            border-top: 2px solid var(--gold);
+            border-right: 2px solid var(--gold);
+        }
+
+        .decorative-corner.bottom-left {
+            bottom: 20px;
+            left: 20px;
+            border-bottom: 2px solid var(--gold);
+            border-left: 2px solid var(--gold);
+        }
+
+        .decorative-corner.bottom-right {
+            bottom: 20px;
+            right: 20px;
+            border-bottom: 2px solid var(--gold);
+            border-right: 2px solid var(--gold);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Intro Screen -->
+        <div class="intro-screen active">
+            <div class="decorative-corner top-left"></div>
+            <div class="decorative-corner top-right"></div>
+            <div class="decorative-corner bottom-left"></div>
+            <div class="decorative-corner bottom-right"></div>
+            
+            <div class="intro-title">Hey Jawahar</div>
+            <div class="intro-subtitle">it's another trial to make you feel special</div>
+            
+            <div class="instructions">
+                <h3>How to Play</h3>
+                <div class="instruction-item">Help the girl collect roses while avoiding obstacles</div>
+                <div class="instruction-item">Press SPACEBAR or CLICK anywhere to jump</div>
+                <div class="instruction-item">The speed increases gradually with your points</div>
+                <div class="instruction-item">See how far you can go</div>
+            </div>
+            
+            <button class="start-btn" onclick="startGame()">BEGIN</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div class="game-container">
+            <div class="game-header">
+                <div class="score-display">
+                    <span class="score-label">Your Score</span>
+                    <span id="scoreValue">0</span>
+                </div>
+            </div>
+            <canvas id="gameCanvas" width="800" height="400"></canvas>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div class="game-over-screen">
+            <div class="decorative-corner top-left"></div>
+            <div class="decorative-corner top-right"></div>
+            <div class="decorative-corner bottom-left"></div>
+            <div class="decorative-corner bottom-right"></div>
+            
+            <div class="oops-text">Oops</div>
+            <div class="final-score">You scored <strong id="finalScore">0</strong> points</div>
+            <button class="retry-btn" onclick="showCelebration()">CONTINUE</button>
+        </div>
+
+        <!-- Celebration Screen -->
+        <div class="celebration-screen">
+            <!-- Step 1: Bouquet giving scene -->
+            <div class="celebration-step bouquet-step active">
+                <div class="bouquet-scene">
+                    <div class="scene-container">
+                        <div class="rose-day-wish">Happy Rose Day</div>
+                        <div class="for-you-text">for the most wonderful</div>
+                        <div class="jawahar-name">Jawahar</div>
+                        
+                        <div class="characters-wrapper">
+                            <!-- Girl Character (Cuter version) -->
+                            <div class="character-container girl">
+                                <svg class="girl-with-bouquet" viewBox="0 0 180 220" preserveAspectRatio="xMidYMid meet">
+                                    <!-- Shadow -->
+                                    <ellipse cx="90" cy="210" rx="40" ry="8" fill="rgba(0,0,0,0.1)"/>
+                                    
+                                    <!-- Legs -->
+                                    <rect x="72" y="150" width="16" height="55" rx="8" fill="#ffd7be"/>
+                                    <rect x="92" y="150" width="16" height="55" rx="8" fill="#ffd7be"/>
+                                    
+                                    <!-- Cute shoes with bows -->
+                                    <ellipse cx="80" cy="208" rx="13" ry="6" fill="#ff1493"/>
+                                    <ellipse cx="100" cy="208" rx="13" ry="6" fill="#ff1493"/>
+                                    <path d="M 75 208 L 72 205 L 78 205 Z" fill="#ff69b4"/>
+                                    <path d="M 95 208 L 92 205 L 98 205 Z" fill="#ff69b4"/>
+                                    
+                                    <!-- Cute flowing dress -->
+                                    <path d="M 62 95 Q 60 100 52 150 L 68 150 L 90 115 L 112 150 L 128 150 Q 120 100 118 95 Z" fill="#ff69b4" filter="url(#shadow)"/>
+                                    <rect x="68" y="88" width="44" height="18" rx="9" fill="#ff1493"/>
+                                    
+                                    <!-- Dress pattern/hearts -->
+                                    <circle cx="75" cy="120" r="3" fill="#ff1493" opacity="0.4"/>
+                                    <circle cx="90" cy="125" r="3" fill="#ff1493" opacity="0.4"/>
+                                    <circle cx="105" cy="120" r="3" fill="#ff1493" opacity="0.4"/>
+                                    
+                                    <!-- Body/Neck -->
+                                    <rect x="85" y="68" width="10" height="22" rx="5" fill="#ffd7be"/>
+                                    
+                                    <!-- Head (bigger, cuter) -->
+                                    <circle cx="90" cy="52" r="30" fill="#ffd7be" filter="url(#glow)"/>
+                                    
+                                    <!-- Cute hairstyle with bangs -->
+                                    <path d="M 60 42 Q 60 18 90 18 Q 120 18 120 42 Q 120 58 112 63 L 108 60 Q 112 52 110 45 Q 105 32 90 32 Q 75 32 70 45 Q 68 52 72 60 L 68 63 Q 60 58 60 42" fill="#3d2817"/>
+                                    <!-- Bangs -->
+                                    <path d="M 70 35 Q 75 28 80 30 Q 78 36 75 38" fill="#3d2817"/>
+                                    <path d="M 85 32 Q 90 26 92 30 Q 90 35 88 37" fill="#3d2817"/>
+                                    <path d="M 98 32 Q 100 28 105 30 Q 103 36 100 38" fill="#3d2817"/>
+                                    <!-- Hair accessory - flower -->
+                                    <circle cx="115" cy="40" r="5" fill="#ff69b4"/>
+                                    <circle cx="113" cy="38" r="2" fill="#ff1493"/>
+                                    <circle cx="117" cy="38" r="2" fill="#ff1493"/>
+                                    <circle cx="113" cy="42" r="2" fill="#ff1493"/>
+                                    <circle cx="117" cy="42" r="2" fill="#ff1493"/>
+                                    
+                                    <!-- Big cute eyes -->
+                                    <ellipse cx="76" cy="50" rx="5" ry="6" fill="white"/>
+                                    <ellipse cx="104" cy="50" rx="5" ry="6" fill="white"/>
+                                    <circle cx="77" cy="51" r="4" fill="#2c1810"/>
+                                    <circle cx="105" cy="51" r="4" fill="#2c1810"/>
+                                    <circle cx="78.5" cy="49.5" r="2" fill="white"/>
+                                    <circle cx="106.5" cy="49.5" r="2" fill="white"/>
+                                    
+                                    <!-- Cute eyelashes -->
+                                    <path d="M 71 48 Q 70 46 71 45" stroke="#2c1810" stroke-width="1" fill="none"/>
+                                    <path d="M 74 46 Q 73 44 74 43" stroke="#2c1810" stroke-width="1" fill="none"/>
+                                    <path d="M 109 46 Q 110 44 111 43" stroke="#2c1810" stroke-width="1" fill="none"/>
+                                    <path d="M 106 48 Q 107 46 108 45" stroke="#2c1810" stroke-width="1" fill="none"/>
+                                    
+                                    <!-- Rosy cheeks -->
+                                    <ellipse cx="68" cy="60" rx="8" ry="5" fill="#ffb3d9" opacity="0.6"/>
+                                    <ellipse cx="112" cy="60" rx="8" ry="5" fill="#ffb3d9" opacity="0.6"/>
+                                    
+                                    <!-- Sweet smile -->
+                                    <path d="M 76 65 Q 90 72 104 65" stroke="#ff1493" stroke-width="3" fill="none" stroke-linecap="round"/>
+                                    <circle cx="78" cy="65" r="1.5" fill="#ff1493"/>
+                                    <circle cx="102" cy="65" r="1.5" fill="#ff1493"/>
+                                    
+                                    <!-- Arms reaching forward -->
+                                    <rect x="38" y="100" width="18" height="40" rx="9" fill="#ffd7be" transform="rotate(-20 47 100)"/>
+                                    <rect x="124" y="100" width="18" height="40" rx="9" fill="#ffd7be" transform="rotate(20 133 100)"/>
+                                    
+                                    <!-- Hands -->
+                                    <circle cx="45" cy="135" r="10" fill="#ffd7be"/>
+                                    <circle cx="135" cy="135" r="10" fill="#ffd7be"/>
+                                    
+                                    <!-- Filters -->
+                                    <defs>
+                                        <filter id="shadow">
+                                            <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+                                            <feOffset dx="2" dy="2" result="offsetblur"/>
+                                            <feComponentTransfer>
+                                                <feFuncA type="linear" slope="0.3"/>
+                                            </feComponentTransfer>
+                                            <feMerge>
+                                                <feMergeNode/>
+                                                <feMergeNode in="SourceGraphic"/>
+                                            </feMerge>
+                                        </filter>
+                                        <filter id="glow">
+                                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                                            <feMerge>
+                                                <feMergeNode in="coloredBlur"/>
+                                                <feMergeNode in="SourceGraphic"/>
+                                            </feMerge>
+                                        </filter>
+                                    </defs>
+                                </svg>
+                                
+                                <!-- Sparkles around girl -->
+                                <div class="sparkle" style="top: 15px; left: 5px; animation-delay: 0s;"></div>
+                                <div class="sparkle" style="top: 35px; right: 10px; animation-delay: 0.5s;"></div>
+                                <div class="sparkle" style="bottom: 70px; left: 15px; animation-delay: 1s;"></div>
+                                <div class="sparkle" style="top: 60px; left: 25px; animation-delay: 1.5s;"></div>
+                            </div>
+                            
+                            <!-- Bouquet Animation (moves from girl to boy) -->
+                            <svg class="bouquet-visual" viewBox="0 0 100 120" id="animatedBouquet">
+                                <!-- Wrapper/Paper -->
+                                <path d="M 20 60 L 10 110 Q 10 115 15 118 L 85 118 Q 90 115 90 110 L 80 60 Z" fill="#ffe4e1" stroke="#d4697d" stroke-width="2"/>
+                                <path d="M 20 60 L 80 60 L 75 75 L 25 75 Z" fill="#ffd7dc" opacity="0.7"/>
+                                
+                                <!-- Ribbon bow -->
+                                <ellipse cx="50" cy="68" rx="38" ry="9" fill="#ff1493" opacity="0.9"/>
+                                <path d="M 12 68 Q 5 72 10 78 L 18 72 Z" fill="#ff69b4"/>
+                                <path d="M 88 68 Q 95 72 90 78 L 82 72 Z" fill="#ff69b4"/>
+                                <circle cx="50" cy="68" r="6" fill="#ff1493"/>
+                                
+                                <!-- Roses container (will be filled dynamically) -->
+                                <g id="bouquetRoses" transform="translate(0, 0)">
+                                    <!-- Roses will be added here by JavaScript -->
+                                </g>
+                                
+                                <!-- Green leaves/stems showing -->
+                                <ellipse cx="28" cy="52" rx="7" ry="16" fill="#90ee90" opacity="0.8" transform="rotate(-25 28 52)"/>
+                                <ellipse cx="50" cy="48" rx="7" ry="20" fill="#7cba7c" opacity="0.8"/>
+                                <ellipse cx="72" cy="52" rx="7" ry="16" fill="#90ee90" opacity="0.8" transform="rotate(25 72 52)"/>
+                                <ellipse cx="38" cy="50" rx="6" ry="14" fill="#8fbc8f" opacity="0.7" transform="rotate(-15 38 50)"/>
+                                <ellipse cx="62" cy="50" rx="6" ry="14" fill="#8fbc8f" opacity="0.7" transform="rotate(15 62 50)"/>
+                            </svg>
+                            
+                            <!-- Boy Character -->
+                            <div class="character-container boy">
+                                <svg class="boy-receiving" viewBox="0 0 180 220" preserveAspectRatio="xMidYMid meet">
+                                    <!-- Shadow -->
+                                    <ellipse cx="90" cy="210" rx="40" ry="8" fill="rgba(0,0,0,0.1)"/>
+                                    
+                                    <!-- Legs -->
+                                    <rect x="70" y="145" width="18" height="60" rx="9" fill="#ffd7be"/>
+                                    <rect x="92" y="145" width="18" height="60" rx="9" fill="#ffd7be"/>
+                                    
+                                    <!-- Shoes -->
+                                    <ellipse cx="79" cy="208" rx="13" ry="6" fill="#2c3e50"/>
+                                    <ellipse cx="101" cy="208" rx="13" ry="6" fill="#2c3e50"/>
+                                    
+                                    <!-- Pants -->
+                                    <rect x="68" y="110" width="22" height="38" fill="#34495e" rx="3"/>
+                                    <rect x="90" y="110" width="22" height="38" fill="#34495e" rx="3"/>
+                                    <rect x="68" y="110" width="44" height="8" fill="#2c3e50" rx="2"/>
+                                    
+                                    <!-- Shirt -->
+                                    <path d="M 60 85 L 55 110 L 75 110 L 90 145 L 105 110 L 125 110 L 120 85 Z" fill="#4169e1"/>
+                                    <rect x="68" y="80" width="44" height="32" rx="5" fill="#5585e8"/>
+                                    <circle cx="90" cy="88" r="2" fill="white" opacity="0.7"/>
+                                    <circle cx="90" cy="96" r="2" fill="white" opacity="0.7"/>
+                                    <circle cx="90" cy="104" r="2" fill="white" opacity="0.7"/>
+                                    
+                                    <!-- Collar -->
+                                    <path d="M 85 80 L 80 85 L 85 85 Z" fill="#4169e1"/>
+                                    <path d="M 95 80 L 100 85 L 95 85 Z" fill="#4169e1"/>
+                                    
+                                    <!-- Body/Neck -->
+                                    <rect x="85" y="63" width="10" height="20" rx="5" fill="#ffd7be"/>
+                                    
+                                    <!-- Head -->
+                                    <circle cx="90" cy="48" r="26" fill="#ffd7be" filter="url(#glow2)"/>
+                                    
+                                    <!-- Hair -->
+                                    <path d="M 64 35 Q 64 18 90 18 Q 116 18 116 35 L 112 38 Q 108 28 100 25 Q 92 23 90 23 Q 88 23 80 25 Q 72 28 68 38 Z" fill="#3d2817"/>
+                                    <path d="M 75 30 Q 78 24 82 26 Q 80 30 78 32" fill="#3d2817"/>
+                                    
+                                    <!-- Face features -->
+                                    <circle cx="78" cy="46" r="3" fill="#2c1810"/>
+                                    <circle cx="102" cy="46" r="3" fill="#2c1810"/>
+                                    <circle cx="79" cy="47" r="1" fill="white"/>
+                                    <circle cx="103" cy="47" r="1" fill="white"/>
+                                    
+                                    <!-- Big happy smile -->
+                                    <path d="M 76 58 Q 90 68 104 58" stroke="#8B1538" stroke-width="3" fill="none" stroke-linecap="round"/>
+                                    
+                                    <!-- Arms extended to receive -->
+                                    <rect x="38" y="95" width="18" height="38" rx="9" fill="#ffd7be" transform="rotate(-15 47 95)"/>
+                                    <rect x="124" y="95" width="18" height="38" rx="9" fill="#ffd7be" transform="rotate(15 133 95)"/>
+                                    
+                                    <!-- Hands ready to receive -->
+                                    <circle cx="42" cy="130" r="9" fill="#ffd7be"/>
+                                    <circle cx="138" cy="130" r="9" fill="#ffd7be"/>
+                                    
+                                    <!-- Animated hearts above head -->
+                                    <g id="boyHearts">
+                                        <path d="M 0,-5 Q -4,-9 -8,-9 Q -12,-9 -12,-5 Q -12,0 0,8 Q 12,0 12,-5 Q 12,-9 8,-9 Q 4,-9 0,-5" 
+                                              fill="#ff1493" opacity="0" transform="translate(75, 15)">
+                                            <animate attributeName="opacity" values="0;0.8;0" dur="2s" begin="3s" repeatCount="indefinite"/>
+                                            <animateTransform attributeName="transform" type="translate" 
+                                                            values="75,15; 75,5" dur="2s" begin="3s" repeatCount="indefinite"/>
+                                        </path>
+                                        <path d="M 0,-5 Q -4,-9 -8,-9 Q -12,-9 -12,-5 Q -12,0 0,8 Q 12,0 12,-5 Q 12,-9 8,-9 Q 4,-9 0,-5" 
+                                              fill="#ff69b4" opacity="0" transform="translate(105, 15)">
+                                            <animate attributeName="opacity" values="0;0.8;0" dur="2s" begin="3.5s" repeatCount="indefinite"/>
+                                            <animateTransform attributeName="transform" type="translate" 
+                                                            values="105,15; 105,5" dur="2s" begin="3.5s" repeatCount="indefinite"/>
+                                        </path>
+                                    </g>
+                                    
+                                    <defs>
+                                        <filter id="glow2">
+                                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                                            <feMerge>
+                                                <feMergeNode in="coloredBlur"/>
+                                                <feMergeNode in="SourceGraphic"/>
+                                            </feMerge>
+                                        </filter>
+                                    </defs>
+                                </svg>
+                                
+                                <!-- Sparkles around boy -->
+                                <div class="sparkle" style="top: 10px; right: 5px; animation-delay: 0.3s;"></div>
+                                <div class="sparkle" style="bottom: 85px; right: 15px; animation-delay: 0.8s;"></div>
+                                <div class="sparkle" style="top: 50px; right: 20px; animation-delay: 1.3s;"></div>
+                            </div>
+                        </div>
+
+                        <div class="rose-count-display">
+                            <span id="bouquetRoseCount">0</span>
+                            <span class="roses-collected-label">roses collected for you</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Adore you screen -->
+            <div class="celebration-step adore-step">
+                <div class="adore-screen">
+                    <div class="adore-message">
+                        <h1>adore you<br>a lot</h1>
+                        <div class="subtitle">truly, deeply, always</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Made with love screen -->
+            <div class="celebration-step credits-step">
+                <div class="credits-screen">
+                    <div class="credits-message">
+                        <h1>made with love</h1>
+                        <div class="heart-decoration">♥</div>
+                        <div class="by-line">by Sakshi</div>
+                        <button class="play-again-btn" onclick="playAgain()">PLAY AGAIN</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Game variables
+        let gameRunning = false;
+        let score = 0;
+        let baseSpeed = 4;
+        let gameSpeed = baseSpeed;
+        let obstacleFrequency = 150;
+        let frameCount = 0;
+
+        // Player (girl with rose)
+        const player = {
+            x: 100,
+            y: 0,
+            width: 40,
+            height: 60,
+            velocityY: 0,
+            gravity: 0.6,
+            jumpPower: -12,
+            onGround: false
+        };
+
+        const ground = canvas.height - 80;
+        let obstacles = [];
+        let roses = [];
+
+        // Sound effects using Web Audio API
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playJumpSound() {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 500;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.15);
+        }
+
+        function playScoreSound() {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 700;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.12, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.12);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.12);
+        }
+
+        function playRoseCollectSound() {
+            // Beautiful chime sound for rose collection
+            const oscillator1 = audioContext.createOscillator();
+            const oscillator2 = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator1.connect(gainNode);
+            oscillator2.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator1.frequency.value = 800;
+            oscillator2.frequency.value = 1200;
+            oscillator1.type = 'sine';
+            oscillator2.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            oscillator1.start(audioContext.currentTime);
+            oscillator2.start(audioContext.currentTime + 0.05);
+            oscillator1.stop(audioContext.currentTime + 0.3);
+            oscillator2.stop(audioContext.currentTime + 0.35);
+        }
+
+        function playGameOverSound() {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.5);
+            oscillator.type = 'sawtooth';
+            
+            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        function playCelebrationSound() {
+            // Victory fanfare
+            const times = [0, 0.15, 0.3, 0.5];
+            const freqs = [523, 659, 784, 1047];
+            
+            times.forEach((time, i) => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                
+                osc.frequency.value = freqs[i];
+                osc.type = 'sine';
+                
+                gain.gain.setValueAtTime(0.15, audioContext.currentTime + time);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + time + 0.3);
+                
+                osc.start(audioContext.currentTime + time);
+                osc.stop(audioContext.currentTime + time + 0.3);
+            });
+        }
+
+        function startGame() {
+            document.querySelector('.intro-screen').classList.remove('active');
+            document.querySelector('.game-container').classList.add('active');
+            resetGame();
+            gameRunning = true;
+            gameLoop();
+        }
+
+        function resetGame() {
+            player.y = ground - player.height;
+            player.velocityY = 0;
+            player.onGround = true;
+            obstacles = [];
+            roses = [];
+            score = 0;
+            gameSpeed = baseSpeed;
+            frameCount = 0;
+            document.getElementById('scoreValue').textContent = score;
+        }
+
+        function jump() {
+            if (player.onGround && gameRunning) {
+                player.velocityY = player.jumpPower;
+                player.onGround = false;
+                playJumpSound();
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                jump();
+            }
+        });
+
+        canvas.addEventListener('click', jump);
+
+        function drawPlayer() {
+            // Girl body (simple stick figure with dress)
+            ctx.fillStyle = '#ff69b4';
+            ctx.fillRect(player.x + 15, player.y + 15, 10, 25); // body
+            
+            // Head
+            ctx.beginPath();
+            ctx.arc(player.x + 20, player.y + 10, 8, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffd7be';
+            ctx.fill();
+            
+            // Hair
+            ctx.fillStyle = '#4a2511';
+            ctx.fillRect(player.x + 12, player.y + 2, 16, 8);
+            
+            // Dress
+            ctx.beginPath();
+            ctx.moveTo(player.x + 15, player.y + 40);
+            ctx.lineTo(player.x + 10, player.y + 60);
+            ctx.lineTo(player.x + 30, player.y + 60);
+            ctx.lineTo(player.x + 25, player.y + 40);
+            ctx.closePath();
+            ctx.fillStyle = '#ff1493';
+            ctx.fill();
+            
+            // Rose in hand
+            ctx.fillStyle = '#ff0066';
+            ctx.beginPath();
+            ctx.arc(player.x + 35, player.y + 30, 5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Rose stem
+            ctx.strokeStyle = '#2d5016';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(player.x + 35, player.y + 35);
+            ctx.lineTo(player.x + 35, player.y + 50);
+            ctx.stroke();
+        }
+
+        function drawGround() {
+            ctx.fillStyle = '#90ee90';
+            ctx.fillRect(0, ground, canvas.width, canvas.height - ground);
+            
+            // Grass details
+            ctx.strokeStyle = '#228b22';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < canvas.width; i += 20) {
+                ctx.beginPath();
+                ctx.moveTo(i, ground);
+                ctx.lineTo(i + 5, ground - 5);
+                ctx.stroke();
+            }
+        }
+
+        function createObstacle() {
+            obstacles.push({
+                x: canvas.width,
+                y: ground - 40,
+                width: 30,
+                height: 40
+            });
+        }
+
+        function createRose() {
+            roses.push({
+                x: canvas.width,
+                y: ground - 100 - Math.random() * 50,
+                width: 15,
+                height: 15,
+                collected: false
+            });
+        }
+
+        function drawObstacle(obstacle) {
+            // Rock/stone obstacle
+            ctx.fillStyle = '#696969';
+            ctx.beginPath();
+            ctx.ellipse(obstacle.x + obstacle.width/2, obstacle.y + obstacle.height/2, 
+                       obstacle.width/2, obstacle.height/2, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = '#505050';
+            ctx.beginPath();
+            ctx.ellipse(obstacle.x + obstacle.width/2 - 5, obstacle.y + obstacle.height/2 - 5, 
+                       obstacle.width/3, obstacle.height/3, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function drawRose(rose) {
+            if (!rose.collected) {
+                // Rose flower
+                ctx.fillStyle = '#ff69b4';
+                ctx.beginPath();
+                ctx.arc(rose.x, rose.y, 7, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = '#ff1493';
+                ctx.beginPath();
+                ctx.arc(rose.x, rose.y, 4, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Leaf
+                ctx.fillStyle = '#228b22';
+                ctx.beginPath();
+                ctx.ellipse(rose.x + 5, rose.y + 5, 3, 5, Math.PI / 4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function checkCollision(rect1, rect2) {
+            return rect1.x < rect2.x + rect2.width &&
+                   rect1.x + rect1.width > rect2.x &&
+                   rect1.y < rect2.y + rect2.height &&
+                   rect1.y + rect1.height > rect2.y;
+        }
+
+        function updateGame() {
+            frameCount++;
+            
+            // Update speed gradually based on score
+            gameSpeed = baseSpeed + (score * 0.05);
+            
+            // Player physics
+            player.velocityY += player.gravity;
+            player.y += player.velocityY;
+            
+            if (player.y >= ground - player.height) {
+                player.y = ground - player.height;
+                player.velocityY = 0;
+                player.onGround = true;
+            }
+            
+            // Create obstacles
+            if (frameCount % Math.max(80, obstacleFrequency - score * 2) === 0) {
+                createObstacle();
+            }
+            
+            // Create roses
+            if (frameCount % 120 === 0) {
+                createRose();
+            }
+            
+            // Update obstacles
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                obstacles[i].x -= gameSpeed;
+                
+                if (obstacles[i].x + obstacles[i].width < 0) {
+                    obstacles.splice(i, 1);
+                    score++;
+                    document.getElementById('scoreValue').textContent = score;
+                    playScoreSound();
+                } else if (checkCollision(player, obstacles[i])) {
+                    gameOver();
+                }
+            }
+            
+            // Update roses
+            for (let i = roses.length - 1; i >= 0; i--) {
+                roses[i].x -= gameSpeed;
+                
+                if (roses[i].x + roses[i].width < 0) {
+                    roses.splice(i, 1);
+                } else if (!roses[i].collected && checkCollision(player, roses[i])) {
+                    roses[i].collected = true;
+                    score += 5;
+                    document.getElementById('scoreValue').textContent = score;
+                    playRoseCollectSound();
+                }
+            }
+        }
+
+        function drawGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            drawGround();
+            drawPlayer();
+            
+            obstacles.forEach(drawObstacle);
+            roses.forEach(drawRose);
+        }
+
+        function gameLoop() {
+            if (!gameRunning) return;
+            
+            updateGame();
+            drawGame();
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        function gameOver() {
+            gameRunning = false;
+            playGameOverSound();
+            document.querySelector('.game-container').classList.remove('active');
+            document.querySelector('.game-over-screen').classList.add('active');
+            document.getElementById('finalScore').textContent = score;
+        }
+
+        function showCelebration() {
+            document.querySelector('.game-over-screen').classList.remove('active');
+            document.querySelector('.celebration-screen').classList.add('active');
+            
+            // Play celebration sound
+            playCelebrationSound();
+            
+            // Reset all celebration steps
+            document.querySelectorAll('.celebration-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // Show bouquet scene first
+            document.querySelector('.bouquet-step').classList.add('active');
+            
+            // Calculate total roses collected
+            let totalRoses = 0;
+            roses.forEach(rose => {
+                if (rose.collected) totalRoses++;
+            });
+            
+            document.getElementById('bouquetRoseCount').textContent = totalRoses;
+            
+            // Create petals in background
+            createPetals();
+            
+            // Draw roses in bouquet with delay for staggered animation
+            setTimeout(() => {
+                drawBouquetRoses(totalRoses);
+            }, 500);
+            
+            // Show bouquet scene for 6 seconds
+            setTimeout(() => {
+                document.querySelector('.bouquet-step').classList.remove('active');
+                document.querySelector('.adore-step').classList.add('active');
+            }, 6000);
+            
+            // Then show adore screen for 4 seconds
+            setTimeout(() => {
+                document.querySelector('.adore-step').classList.remove('active');
+                document.querySelector('.credits-step').classList.add('active');
+            }, 10000);
+        }
+
+        function playAgain() {
+            // Hide celebration screen
+            document.querySelector('.celebration-screen').classList.remove('active');
+            
+            // Clear petals
+            document.querySelectorAll('.petal').forEach(petal => petal.remove());
+            
+            // Reset and show game
+            document.querySelector('.game-container').classList.add('active');
+            resetGame();
+            gameRunning = true;
+            gameLoop();
+        }
+
+        function drawBouquetRoses(count) {
+            const bouquetRosesGroup = document.querySelector('#bouquetRoses');
+            const displayCount = Math.min(count, 30); // Show up to 30 roses
+            
+            // Clear existing roses
+            while (bouquetRosesGroup.firstChild) {
+                bouquetRosesGroup.removeChild(bouquetRosesGroup.firstChild);
+            }
+            
+            if (displayCount === 0) {
+                // Show at least one rose even if 0 collected
+                displayCount = 1;
+            }
+            
+            // Comprehensive rose positions for a full bouquet
+            const positions = [
+                // Center top layer
+                {x: 50, y: 12}, {x: 43, y: 15}, {x: 57, y: 15},
+                // Second layer
+                {x: 36, y: 19}, {x: 50, y: 17}, {x: 64, y: 19},
+                // Third layer
+                {x: 30, y: 24}, {x: 42, y: 22}, {x: 58, y: 22}, {x: 70, y: 24},
+                // Fourth layer (fuller)
+                {x: 25, y: 29}, {x: 35, y: 27}, {x: 50, y: 25}, {x: 65, y: 27}, {x: 75, y: 29},
+                // Fifth layer
+                {x: 28, y: 34}, {x: 40, y: 32}, {x: 52, y: 30}, {x: 60, y: 32}, {x: 72, y: 34},
+                // Sixth layer
+                {x: 22, y: 39}, {x: 33, y: 37}, {x: 45, y: 35}, {x: 55, y: 35}, {x: 67, y: 37}, {x: 78, y: 39},
+                // Bottom layer
+                {x: 30, y: 43}, {x: 42, y: 41}, {x: 50, y: 39}, {x: 58, y: 41}, {x: 70, y: 43}
+            ];
+            
+            for (let i = 0; i < displayCount && i < positions.length; i++) {
+                const roseGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                roseGroup.setAttribute("transform", `translate(${positions[i].x}, ${positions[i].y})`);
+                
+                // Staggered animation for each rose
+                const animEl = document.createElementNS("http://www.w3.org/2000/svg", "animateTransform");
+                animEl.setAttribute("attributeName", "transform");
+                animEl.setAttribute("type", "scale");
+                animEl.setAttribute("additive", "sum");
+                animEl.setAttribute("from", "0");
+                animEl.setAttribute("to", "1");
+                animEl.setAttribute("dur", "0.4s");
+                animEl.setAttribute("begin", `${0.6 + (i * 0.06)}s`);
+                animEl.setAttribute("fill", "freeze");
+                
+                // Varied rose colors
+                const colors = ['#ff1493', '#ff69b4', '#ff0066', '#ff1472', '#ff3380', '#ff4da6'];
+                const roseColor = colors[i % colors.length];
+                
+                // Create rose with 6 petals for fuller look
+                for (let j = 0; j < 6; j++) {
+                    const petal = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+                    const angle = (j * 60) * Math.PI / 180;
+                    const px = Math.cos(angle) * 3.2;
+                    const py = Math.sin(angle) * 3.2;
+                    petal.setAttribute("cx", px);
+                    petal.setAttribute("cy", py);
+                    petal.setAttribute("rx", "2.8");
+                    petal.setAttribute("ry", "4.2");
+                    petal.setAttribute("fill", roseColor);
+                    petal.setAttribute("transform", `rotate(${j * 60})`);
+                    petal.style.filter = 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))';
+                    roseGroup.appendChild(petal);
+                }
+                
+                // Outer petal layer for depth
+                for (let j = 0; j < 6; j++) {
+                    const outerPetal = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+                    const angle = (j * 60 + 30) * Math.PI / 180;
+                    const px = Math.cos(angle) * 2.5;
+                    const py = Math.sin(angle) * 2.5;
+                    outerPetal.setAttribute("cx", px);
+                    outerPetal.setAttribute("cy", py);
+                    outerPetal.setAttribute("rx", "2");
+                    outerPetal.setAttribute("ry", "3");
+                    outerPetal.setAttribute("fill", roseColor);
+                    outerPetal.setAttribute("opacity", "0.7");
+                    outerPetal.setAttribute("transform", `rotate(${j * 60 + 30})`);
+                    roseGroup.appendChild(outerPetal);
+                }
+                
+                // Rose center
+                const center = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                center.setAttribute("r", "2.2");
+                center.setAttribute("fill", "#c2185b");
+                roseGroup.appendChild(center);
+                
+                // Highlight for 3D effect
+                const shine = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                shine.setAttribute("cx", "-0.7");
+                shine.setAttribute("cy", "-0.7");
+                shine.setAttribute("r", "1");
+                shine.setAttribute("fill", "white");
+                shine.setAttribute("opacity", "0.7");
+                roseGroup.appendChild(shine);
+                
+                roseGroup.appendChild(animEl);
+                bouquetRosesGroup.appendChild(roseGroup);
+            }
+        }
+
+        function createPetals() {
+            const celebrationScreen = document.querySelector('.celebration-screen');
+            const numPetals = 100;
+            
+            for (let i = 0; i < numPetals; i++) {
+                const petal = document.createElement('div');
+                petal.className = 'petal';
+                petal.style.left = Math.random() * 100 + '%';
+                petal.style.animationDuration = (Math.random() * 3 + 4) + 's';
+                petal.style.animationDelay = Math.random() * 5 + 's';
+                celebrationScreen.appendChild(petal);
+            }
+        }
+    </script>
+</body>
+</html>
